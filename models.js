@@ -1,0 +1,9 @@
+import mongoose from 'mongoose';
+const {Schema,model}=mongoose;
+const opts={timestamps:true};
+export const User=model('User',new Schema({name:{type:String,required:true,trim:true},email:{type:String,required:true,unique:true,lowercase:true,trim:true},passwordHash:{type:String,required:true},role:{type:String,enum:['admin','manager','sales'],default:'sales'}},opts));
+export const Lead=model('Lead',new Schema({name:{type:String,required:true},email:{type:String,required:true,lowercase:true},phone:String,company:String,source:{type:String,default:'Website'},status:{type:String,enum:['New','Contacted','Qualified','Lost'],default:'New'},owner:{type:Schema.Types.ObjectId,ref:'User',required:true},notes:String},opts));
+export const Deal=model('Deal',new Schema({title:{type:String,required:true},company:String,amount:{type:Number,min:0,default:0},stage:{type:String,enum:['Prospecting','Qualification','Proposal','Negotiation','Won','Lost'],default:'Prospecting'},probability:{type:Number,min:0,max:100,default:20},closeDate:Date,lead:{type:Schema.Types.ObjectId,ref:'Lead'},owner:{type:Schema.Types.ObjectId,ref:'User',required:true}},opts));
+export const Activity=model('Activity',new Schema({type:{type:String,enum:['Call','Email','Meeting','Note'],required:true},subject:{type:String,required:true},details:String,relatedType:{type:String,enum:['Lead','Customer','Deal'],required:true},relatedId:{type:Schema.Types.ObjectId,required:true},owner:{type:Schema.Types.ObjectId,ref:'User',required:true},occurredAt:{type:Date,default:Date.now},emailTo:String,emailStatus:{type:String,enum:['logged','sent'],default:'logged'}},opts));
+
+export const Customer=model('Customer',new Schema({name:{type:String,required:true},email:String,company:String,phone:String,industry:String,owner:{type:Schema.Types.ObjectId,ref:'User',required:true}},opts));
